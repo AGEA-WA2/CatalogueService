@@ -10,6 +10,7 @@ import com.example.catalogueservicepart.repositories.UserRepository
 import com.example.catalogueservicepart.roles.Rolename
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -169,5 +170,14 @@ class UserDetailsServiceImpl(
             throw UsernameNotFoundException("Wrong username")
         }
 
+    }
+
+    fun getUsers(): Set<UserDetailsDTO> {
+        return userRepository.findAll().map { it.toUserDetailsDTO() }.toSet()
+    }
+
+    fun getUser(): UserDetailsDTO? {
+        val username = SecurityContextHolder.getContext().authentication.principal.toString()
+        return userRepository.findByUsername(username)?.toUserDetailsDTO()
     }
 }

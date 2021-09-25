@@ -16,6 +16,8 @@ repositories {
     mavenCentral()
 }
 
+extra["springCloudVersion"] = "2020.0.4"
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
@@ -37,7 +39,13 @@ dependencies {
     runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
-    testImplementation("org.springframework.com.example.catalogueservicepart.security:spring-com.example.catalogueservicepart.security-test")
+    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-server")
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+    }
 }
 
 tasks.withType<KotlinCompile> {

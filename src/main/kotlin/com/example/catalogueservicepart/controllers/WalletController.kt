@@ -2,19 +2,20 @@ package com.example.catalogueservicepart.controllers
 
 import com.example.catalogueservicepart.dto.CreateWalletDTO
 import com.example.catalogueservicepart.dto.TransactionRequestDTO
+import com.example.catalogueservicepart.services.WalletService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/wallets")
-class WalletController {
-    @GetMapping("/{walletId}")
-    fun getWallet(@PathVariable("walletId")walletId:Long):ResponseEntity<Any>{
-        return ResponseEntity.ok("Sei autenticato con il wallet: $walletId")
+class WalletController(val walletService: WalletService) {
+    @GetMapping
+    fun getWallet():ResponseEntity<*>{
+        return walletService.getWallets()
     }
 
-    @PreAuthorize("ADMIN")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     fun createWallet(@RequestBody createWalletDTO: CreateWalletDTO){
 
