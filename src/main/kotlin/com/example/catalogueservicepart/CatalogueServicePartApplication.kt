@@ -73,7 +73,8 @@ class CatalogueServicePartApplication{
         return PasswordEncoderFactories.createDelegatingPasswordEncoder()
     }
     @Bean
-    fun restTemplate(): RestTemplate = RestTemplateBuilder().errorHandler(RestTemplateResponseErrorHandler()).build()
+    fun restTemplate(): RestTemplate = RestTemplateBuilder().build()
+//    fun restTemplate(): RestTemplate = RestTemplateBuilder().errorHandler(RestTemplateResponseErrorHandler()).build()
     //@Bean
     //fun discoveryClient(): DiscoveryClient = DiscoveryManager.getInstance().discoveryClient
     //fun discoveryClient(): DiscoveryClient =

@@ -11,10 +11,12 @@ import org.springframework.web.client.ResponseErrorHandler
 @Component
 class RestTemplateResponseErrorHandler : ResponseErrorHandler {
     override fun hasError(response: ClientHttpResponse): Boolean {
+        println("DENTRO HASERROR")
         return (response.statusCode.is5xxServerError || response.statusCode.is4xxClientError)
     }
 
     override fun handleError(httpResponse: ClientHttpResponse) {
+        println("DENTRO HANDLEHERRROR")
         println("ciao")
     }
 /*        if (httpResponse.statusCode()

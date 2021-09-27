@@ -23,6 +23,6 @@ class ProductService(val restTemplate: RestTemplate) {
 
     fun createProduct(product: ProductBodyDTO): ResponseEntity<*> {
         val addr = eurekaClient.getApplication("warehouseService").instances[0]
-        return restTemplate.postForEntity("http://${addr.ipAddr}:${addr.port}/products", product, Any::class.java)
+        return restTemplate.postForEntity("http://${addr.ipAddr}:${addr.port}/products", product, ProductDTO::class.java)
     }
 }

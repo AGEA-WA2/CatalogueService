@@ -1,6 +1,10 @@
 package com.example.catalogueservicepart
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.nimbusds.jose.util.IOUtils
 import javassist.NotFoundException
+import net.minidev.json.JSONObject
+import org.apache.catalina.util.IOTools
 import org.springframework.beans.TypeMismatchException
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.*
@@ -13,6 +17,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.client.RestClientException
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 import org.springframework.web.multipart.support.MissingServletRequestPartException
@@ -234,6 +240,15 @@ class MyExceptionHandler: ResponseEntityExceptionHandler() {
     fun handleDataIntegrityViolation(ex: DataIntegrityViolationException): ResponseEntity<Any?>? {
         logger.info(ex.javaClass.name)
         val apiError = ApiError(HttpStatus.BAD_REQUEST, ex.localizedMessage, "SQL constraint violated")
+        return ResponseEntity(apiError, HttpHeaders(), apiError.status!!)
+    }
+    @ExceptionHandler(RestClientException::class)
+    fun handleRestClient(ex: RestClientException): ResponseEntity<Any?>? {
+        logger.info(ex.javaClass.name)
+
+        val err = ex as HttpClientErrorException
+        val apiError = ObjectMapper().readValue(err.responseBodyAsString, ApiError::class.java)
+
         return ResponseEntity(apiError, HttpHeaders(), apiError.status!!)
     }
 }

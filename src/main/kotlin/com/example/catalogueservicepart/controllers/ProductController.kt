@@ -23,7 +23,7 @@ class ProductController(val productService: ProductService) {
     }
 
     @GetMapping
-    fun retreiveProductByCategory(@RequestParam("category") category: String) {
+    fun retrieveProductByCategory(@RequestParam("category") category: String) {
 
     }
 
