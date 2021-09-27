@@ -84,7 +84,6 @@ class UserDetailsServiceImpl(
         if(user.customer != null) {
             customerRepository.deleteById(user.customer?.getId()!!)
             user.customer = null
-
         }
 
         userRepository.save(user)
@@ -176,8 +175,17 @@ class UserDetailsServiceImpl(
         return userRepository.findAll().map { it.toUserDetailsDTO() }.toSet()
     }
 
-    fun getUser(): UserDetailsDTO? {
-        val username = SecurityContextHolder.getContext().authentication.principal.toString()
-        return userRepository.findByUsername(username)?.toUserDetailsDTO()
+    fun changeUsername(oldUsername: String, newUsername: String): UserDetailsDTO? {
+        val user = userRepository.findByUsername(oldUsername) ?: return null
+        user.username = newUsername
+        userRepository.save(user)
+        return user.toUserDetailsDTO()
+    }
+
+    fun changeAddress(address: String, username: String): UserDetailsDTO? {
+        val user = userRepository.findByUsername(username) ?: return null
+        user.address = address
+        userRepository.save(user)
+        return user.toUserDetailsDTO()
     }
 }

@@ -65,7 +65,7 @@ class User : EntityBase<Long>() {
 
     fun retrieveRoles(): Set<Rolename> {
         val result = mutableSetOf<Rolename>()
-        roles.split(",").toSet().forEach {
+        roles.split(", ").toSet().forEach {
             if (it == "CUSTOMER") result.add(Rolename.CUSTOMER)
             if (it == "ADMIN") result.add(Rolename.ADMIN)
         }

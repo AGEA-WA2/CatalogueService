@@ -69,3 +69,14 @@ fun User.toUserDetailsDTO(): UserDetailsDTO {
         retrieveRoles().map { SimpleGrantedAuthority(it.name) }.toMutableList()
     )
 }
+
+fun UserDetailsDTO.toUserDTO(): UserDTO {
+    return UserDTO(
+        id,
+        username,
+        email,
+        getAddress(),
+        getRole(),
+        isEnabled
+    )
+}

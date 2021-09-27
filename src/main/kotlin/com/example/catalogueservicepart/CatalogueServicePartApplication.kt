@@ -8,6 +8,7 @@ import com.netflix.discovery.EurekaClient
 import com.netflix.discovery.EurekaClientConfig
 import com.netflix.discovery.guice.EurekaModule
 import com.netflix.discovery.shared.transport.EurekaClientFactoryBuilder
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -29,6 +30,7 @@ import org.springframework.web.client.RestTemplate
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableScheduling
 class CatalogueServicePartApplication{
+
     @Value("\${spring.mail.host}")
     lateinit var host: String
 
@@ -71,7 +73,7 @@ class CatalogueServicePartApplication{
         return PasswordEncoderFactories.createDelegatingPasswordEncoder()
     }
     @Bean
-    fun restTemplate(): RestTemplate = RestTemplateBuilder().build()
+    fun restTemplate(): RestTemplate = RestTemplateBuilder().errorHandler(RestTemplateResponseErrorHandler()).build()
     //@Bean
     //fun discoveryClient(): DiscoveryClient = DiscoveryManager.getInstance().discoveryClient
     //fun discoveryClient(): DiscoveryClient =
