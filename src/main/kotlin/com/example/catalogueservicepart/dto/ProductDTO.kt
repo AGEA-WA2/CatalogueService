@@ -44,3 +44,7 @@ data class ProductPatchDTO(
     val avgRating: Double?,
     val creationDate: Date?
 )
+
+data class PictureUrlDTO(
+    val pictureUrl: String?
+)
