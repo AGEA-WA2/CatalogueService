@@ -2,18 +2,14 @@ package com.example.catalogueservicepart.controllers
 
 import com.example.catalogueservicepart.dto.*
 import com.example.catalogueservicepart.services.ProductService
-import com.example.catalogueservicepart.services.ProductServiceImpl
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("products")
 class ProductController(val productService: ProductService) {
-
-    lateinit var authenticationManager: AuthenticationManager
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping

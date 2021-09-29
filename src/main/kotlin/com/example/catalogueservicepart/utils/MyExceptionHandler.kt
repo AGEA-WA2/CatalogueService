@@ -1,10 +1,7 @@
-package com.example.catalogueservicepart
+package com.example.catalogueservicepart.utils
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.nimbusds.jose.util.IOUtils
 import javassist.NotFoundException
-import net.minidev.json.JSONObject
-import org.apache.catalina.util.IOTools
 import org.springframework.beans.TypeMismatchException
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.*
@@ -30,7 +27,7 @@ import javax.validation.ConstraintViolationException
 
 
 @ControllerAdvice
-class MyExceptionHandler: ResponseEntityExceptionHandler() {
+class MyExceptionHandler : ResponseEntityExceptionHandler() {
     override fun handleMethodArgumentNotValid(
         ex: MethodArgumentNotValidException,
         headers: HttpHeaders,
@@ -79,6 +76,7 @@ class MyExceptionHandler: ResponseEntityExceptionHandler() {
         val apiError = ApiError(HttpStatus.BAD_REQUEST, ex.localizedMessage, errors)
         return handleExceptionInternal(ex, apiError, headers, apiError.status!!, request)
     }
+
     override fun handleTypeMismatch(
         ex: TypeMismatchException,
         headers: HttpHeaders,
@@ -92,6 +90,7 @@ class MyExceptionHandler: ResponseEntityExceptionHandler() {
         val apiError = ApiError(HttpStatus.BAD_REQUEST, ex.localizedMessage, error)
         return ResponseEntity(apiError, HttpHeaders(), apiError.status!!)
     }
+
     override fun handleMissingServletRequestPart(
         ex: MissingServletRequestPartException,
         headers: HttpHeaders,
@@ -104,6 +103,7 @@ class MyExceptionHandler: ResponseEntityExceptionHandler() {
         val apiError = ApiError(HttpStatus.BAD_REQUEST, ex.localizedMessage, error)
         return ResponseEntity(apiError, HttpHeaders(), apiError.status!!)
     }
+
     override fun handleMissingServletRequestParameter(
         ex: MissingServletRequestParameterException,
         headers: HttpHeaders,
@@ -140,6 +140,7 @@ class MyExceptionHandler: ResponseEntityExceptionHandler() {
         val apiError = ApiError(HttpStatus.BAD_REQUEST, ex.localizedMessage, errors)
         return ResponseEntity(apiError, HttpHeaders(), apiError.status!!)
     }
+
     // 404
     override fun handleNoHandlerFoundException(
         ex: NoHandlerFoundException,
@@ -153,6 +154,7 @@ class MyExceptionHandler: ResponseEntityExceptionHandler() {
         val apiError = ApiError(HttpStatus.NOT_FOUND, ex.localizedMessage, error)
         return ResponseEntity(apiError, HttpHeaders(), apiError.status!!)
     }
+
     // 405
     override fun handleHttpRequestMethodNotSupported(
         ex: HttpRequestMethodNotSupportedException,
@@ -169,6 +171,7 @@ class MyExceptionHandler: ResponseEntityExceptionHandler() {
         val apiError = ApiError(HttpStatus.METHOD_NOT_ALLOWED, ex.localizedMessage, builder.toString())
         return ResponseEntity(apiError, HttpHeaders(), apiError.status!!)
     }
+
     // 415
     override fun handleHttpMediaTypeNotSupported(
         ex: HttpMediaTypeNotSupportedException,
@@ -190,6 +193,7 @@ class MyExceptionHandler: ResponseEntityExceptionHandler() {
             ApiError(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ex.localizedMessage, builder.substring(0, builder.length - 2))
         return ResponseEntity(apiError, HttpHeaders(), apiError.status!!)
     }
+
     // 500
     @ExceptionHandler(Exception::class)
     fun handleAll(ex: Exception, request: WebRequest?): ResponseEntity<Any?>? {
@@ -199,49 +203,58 @@ class MyExceptionHandler: ResponseEntityExceptionHandler() {
         val apiError = ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex.localizedMessage, "Error occurred")
         return ResponseEntity(apiError, HttpHeaders(), apiError.status!!)
     }
+
     // My Exceptions
     @ExceptionHandler(NoSuchElementException::class)
-    fun handleNoSuchValueException(ex: NoSuchElementException): ResponseEntity<Any?>?{
+    fun handleNoSuchValueException(ex: NoSuchElementException): ResponseEntity<Any?>? {
         logger.info(ex.javaClass.name)
         val apiError = ApiError(HttpStatus.NOT_FOUND, ex.localizedMessage, "There is not an entity with such an Id")
         return ResponseEntity(apiError, HttpHeaders(), apiError.status!!)
     }
+
     @ExceptionHandler(IllegalArgumentException::class)
-    fun handleIllegalArgumentException(ex: IllegalArgumentException): ResponseEntity<Any?>?{
+    fun handleIllegalArgumentException(ex: IllegalArgumentException): ResponseEntity<Any?>? {
         logger.info(ex.javaClass.name)
         val apiError = ApiError(HttpStatus.BAD_REQUEST, ex.localizedMessage, "Argument must not be null")
         return ResponseEntity(apiError, HttpHeaders(), apiError.status!!)
     }
+
     @ExceptionHandler(TransactionSystemException::class)
-    fun handleTransactionSystem(ex: TransactionSystemException): ResponseEntity<Any?>?{
+    fun handleTransactionSystem(ex: TransactionSystemException): ResponseEntity<Any?>? {
         logger.info(ex.javaClass.name)
         val apiError = ApiError(HttpStatus.BAD_REQUEST, ex.localizedMessage, ex.rootCause.toString())
         return ResponseEntity(apiError, HttpHeaders(), apiError.status!!)
     }
+
     @ExceptionHandler(NotFoundException::class)
     fun handleNotFound(ex: NotFoundException): ResponseEntity<Any?>? {
         logger.info(ex.javaClass.name)
-        val apiError = ApiError(HttpStatus.BAD_REQUEST, ex.localizedMessage, "Resource requested not found or not existing")
+        val apiError =
+            ApiError(HttpStatus.BAD_REQUEST, ex.localizedMessage, "Resource requested not found or not existing")
         return ResponseEntity(apiError, HttpHeaders(), apiError.status!!)
     }
+
     @ExceptionHandler(NullPointerException::class)
-    fun handleNullPointer(ex: NullPointerException): ResponseEntity<Any?>?{
+    fun handleNullPointer(ex: NullPointerException): ResponseEntity<Any?>? {
         logger.info(ex.javaClass.name)
         val apiError = ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex.localizedMessage, "Null pointer reached")
         return ResponseEntity(apiError, HttpHeaders(), apiError.status!!)
     }
+
     @ExceptionHandler(SQLException::class)
     fun handleSQL(ex: SQLException): ResponseEntity<Any?>? {
         logger.info(ex.javaClass.name)
         val apiError = ApiError(HttpStatus.BAD_REQUEST, ex.localizedMessage, "SQL constraint violated")
         return ResponseEntity(apiError, HttpHeaders(), apiError.status!!)
     }
+
     @ExceptionHandler(DataIntegrityViolationException::class)
     fun handleDataIntegrityViolation(ex: DataIntegrityViolationException): ResponseEntity<Any?>? {
         logger.info(ex.javaClass.name)
         val apiError = ApiError(HttpStatus.BAD_REQUEST, ex.localizedMessage, "SQL constraint violated")
         return ResponseEntity(apiError, HttpHeaders(), apiError.status!!)
     }
+
     @ExceptionHandler(RestClientException::class)
     fun handleRestClient(ex: RestClientException): ResponseEntity<Any?>? {
         logger.info(ex.javaClass.name)
@@ -249,6 +262,13 @@ class MyExceptionHandler: ResponseEntityExceptionHandler() {
         val err = ex as HttpClientErrorException
         val apiError = ObjectMapper().readValue(err.responseBodyAsString, ApiError::class.java)
 
+        return ResponseEntity(apiError, HttpHeaders(), apiError.status!!)
+    }
+
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException::class)
+    fun handleAccessDenied(ex: org.springframework.security.access.AccessDeniedException): ResponseEntity<Any?>? {
+        logger.info(ex.javaClass.name)
+        val apiError = ApiError(HttpStatus.UNAUTHORIZED, ex.localizedMessage, "Access denied")
         return ResponseEntity(apiError, HttpHeaders(), apiError.status!!)
     }
 }

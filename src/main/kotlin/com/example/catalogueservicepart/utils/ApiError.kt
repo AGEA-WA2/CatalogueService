@@ -1,4 +1,4 @@
-package com.example.catalogueservicepart
+package com.example.catalogueservicepart.utils
 
 import org.springframework.http.HttpStatus
 

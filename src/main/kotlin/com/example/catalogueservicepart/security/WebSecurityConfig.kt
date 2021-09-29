@@ -13,20 +13,23 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
-class WebSecurityConfig:WebSecurityConfigurerAdapter() {
+class WebSecurityConfig : WebSecurityConfigurerAdapter() {
 
     @Autowired
     val passwordEncoder: PasswordEncoder? = null
+
     @Autowired
     val userDetailsService: UserDetailsServiceImpl? = null
+
     @Autowired
     val authenticationEntryPoint: AuthEntryPoint? = null
+
     @Autowired
     val jwtAuthenticationTokenFilter: JwtAuthenticationTokenFilter? = null
 
     @Override
-    override fun configure(httpSecurity: HttpSecurity){
-        httpSecurity.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
+    override fun configure(httpSecurity: HttpSecurity) {
+        httpSecurity
             .cors()
             .and()
             .csrf()
@@ -38,9 +41,15 @@ class WebSecurityConfig:WebSecurityConfigurerAdapter() {
             .authorizeRequests()
             .antMatchers("/auth/**")
             .permitAll()
-            .and().authorizeRequests().antMatchers("/products/**").permitAll().and()
+            .and()
             .authorizeRequests()
-            .anyRequest().fullyAuthenticated()
+            .antMatchers("/products/**")
+            .permitAll()
+            .and()
+            .authorizeRequests()
+            .anyRequest()
+            .authenticated()
+        httpSecurity.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.example.catalogueservicepart.services
 
 import com.example.catalogueservicepart.dto.OrderDTO
 import com.example.catalogueservicepart.repositories.UserRepository
+import com.example.catalogueservicepart.utils.Utils
 import com.netflix.discovery.DiscoveryClient
 import com.netflix.discovery.EurekaClient
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,16 +18,11 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional
-class OrderServiceImpl(val restTemplate: RestTemplate, val userRepository: UserRepository): OrderService {
-
-    @Qualifier("eurekaClient")
-    @Autowired
-    lateinit var eurekaClient: EurekaClient
+class OrderServiceImpl(val restTemplate: RestTemplate, val userRepository: UserRepository, val utils: Utils): OrderService {
 
     override fun getOrders(): ResponseEntity<*> {
         val username = SecurityContextHolder.getContext().authentication.principal.toString()
         val id = userRepository.findByUsername(username)?.getId()
-        val addr = eurekaClient.getApplication("orderService").instances[0]
-        return restTemplate.getForEntity("http://${addr.ipAddr}:${addr.port}/orders?buyer=$id", Set::class.java)
+        return restTemplate.getForEntity("${utils.buildUrl("orderService")}/orders?buyer=$id", Set::class.java)
     }
 }

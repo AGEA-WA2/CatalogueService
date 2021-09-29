@@ -23,11 +23,11 @@ class JwtAuthenticationTokenFilter():OncePerRequestFilter() {
         filterChain: FilterChain
     ) {
         try {
-            val jwt: String = request.getHeader("Authorization")
+            val jwt: String? = request.getHeader("Authorization")
 
-            val token = jwt.substring(7, jwt.length)
+            val token = jwt?.substring(7, jwt.length)
 
-            if (token.isNotEmpty() && jwtUtils?.validateJwtToken(token) == true) {
+            if (token != null && token.isNotEmpty() && jwtUtils?.validateJwtToken(token) == true) {
                 val userDetails: UserDetailsDTO = jwtUtils!!.getDetailsFromJwtToken(token)
 
                 val authentication = UsernamePasswordAuthenticationToken(
