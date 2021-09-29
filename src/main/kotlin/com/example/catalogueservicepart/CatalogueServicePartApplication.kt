@@ -1,21 +1,10 @@
 package com.example.catalogueservicepart
 
-import com.netflix.appinfo.ApplicationInfoManager
-import com.netflix.discovery.DiscoveryClient
-import com.netflix.discovery.DiscoveryManager
-//import org.springframework.cloud.client.discovery.DiscoveryClient
-import com.netflix.discovery.EurekaClient
-import com.netflix.discovery.EurekaClientConfig
-import com.netflix.discovery.guice.EurekaModule
-import com.netflix.discovery.shared.transport.EurekaClientFactoryBuilder
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.boot.web.client.RestTemplateBuilder
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient
-import org.springframework.cloud.netflix.eureka.EurekaClientConfigBean
 import org.springframework.context.annotation.Bean
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.JavaMailSenderImpl
@@ -74,10 +63,6 @@ class CatalogueServicePartApplication{
     }
     @Bean
     fun restTemplate(): RestTemplate = RestTemplateBuilder().build()
-//    fun restTemplate(): RestTemplate = RestTemplateBuilder().errorHandler(RestTemplateResponseErrorHandler()).build()
-    //@Bean
-    //fun discoveryClient(): DiscoveryClient = DiscoveryManager.getInstance().discoveryClient
-    //fun discoveryClient(): DiscoveryClient =
 }
 
 fun main(args: Array<String>) {

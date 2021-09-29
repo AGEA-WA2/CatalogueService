@@ -10,8 +10,6 @@ import com.example.catalogueservicepart.repositories.UserRepository
 import com.example.catalogueservicepart.roles.Rolename
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -22,7 +20,7 @@ import javax.transaction.Transactional
 @Transactional
 class UserDetailsServiceImpl(
     val userRepository: UserRepository,
-    val notificationService: NotificationService,
+    val notificationService: NotificationServiceImpl,
     val mailService: MailService,
     val customerRepository: CustomerRepository
 ) : UserDetailsService {
@@ -163,7 +161,7 @@ class UserDetailsServiceImpl(
                     "Someone tried to change the password, but he/she insert the wrong old password\n" +
                             "If you don't do this, please call the admin"
                 )
-                throw Exception("Wrong old password");
+                throw Exception("Wrong old password")
             }
         }else{
             throw UsernameNotFoundException("Wrong username")
