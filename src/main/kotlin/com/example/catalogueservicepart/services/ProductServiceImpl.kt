@@ -42,7 +42,6 @@ class ProductServiceImpl(val restTemplate: RestTemplate, val utils: Utils) : Pro
     }
 
     override fun updateExistingProduct(id: Long, product: ProductPatchDTO): ResponseEntity<ProductDTO> {
-        //val url = "${buildUrl()}/{id}"
         val re = RequestEntity.patch("${utils.buildUrl("warehouseService")}/products/{id}", id)
             .accept(MediaType.APPLICATION_JSON).body(product)
         return restTemplate.exchange(re, ProductDTO::class.java)

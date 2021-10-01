@@ -8,7 +8,7 @@ import javax.validation.constraints.Positive
 data class OrderDTO(
     val id: Long? = null,
     @field:NotNull var buyer: Long? = null,
-    @field:Valid var products: MutableSet<ProductDTO> = mutableSetOf(),
+    @field:Valid var products: MutableSet<OrderProductDTO> = mutableSetOf(),
     var status: Status? = null
 )
 
