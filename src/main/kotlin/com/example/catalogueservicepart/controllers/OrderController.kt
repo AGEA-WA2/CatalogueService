@@ -6,6 +6,7 @@ import com.example.catalogueservicepart.dto.ResponseMessage
 import com.example.catalogueservicepart.dto.UpdateOrderDTO
 import com.example.catalogueservicepart.roles.Status
 import com.example.catalogueservicepart.services.OrderService
+import com.example.catalogueservicepart.utils.ApiError
 import com.example.catalogueservicepart.utils.Utils
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -24,13 +25,17 @@ class OrderController(val orderService: OrderService, val restTemplate: RestTemp
     }
 
     @GetMapping("/{orderId}")
-    fun getOrder(@PathVariable("orderId") orderId: Long) {
-
+    fun getOrder(@PathVariable("orderId") orderId: Long): ResponseEntity<*> {
+        return orderService.getOrderById(orderId)
     }
 
     @PostMapping
     fun addNewOrder(@RequestBody @Valid orderDTO: OrderDTO, br: BindingResult): ResponseEntity<*> {
-        return restTemplate.postForEntity("${utils.buildUrl("orderService")}/orders", orderDTO, OrderDTO::class.java)
+        return if (br.hasErrors()) ResponseEntity(
+            ApiError(HttpStatus.BAD_REQUEST, "Bad Request", "${br.fieldError?.field} - ${br.fieldError?.defaultMessage}"),
+            HttpStatus.BAD_REQUEST
+        )
+        else orderService.addNewOrder(orderDTO)
     }
 
     @PatchMapping("/{orderId}")
@@ -38,23 +43,11 @@ class OrderController(val orderService: OrderService, val restTemplate: RestTemp
         @PathVariable("orderId") orderId: Long,
         @RequestBody updateOrderDTO: UpdateOrderDTO
     ): ResponseEntity<*> {
-        val obj = restTemplate.patchForObject(
-            "${utils.buildUrl("orderService")}/orders/$orderId",
-            updateOrderDTO,
-            OrderDTO::class.java
-        )
-        return ResponseEntity(obj, HttpStatus.OK)
+        return orderService.updateOrder(orderId, updateOrderDTO)
     }
 
     @DeleteMapping("/{orderId}")
     fun deleteOrder(@PathVariable("orderId") orderId: Long): ResponseEntity<*> {
-        val updateOrderDTO = UpdateOrderDTO()
-        updateOrderDTO.status = Status.CANCELED
-        val obj = restTemplate.patchForObject(
-            "${utils.buildUrl("orderService")}/orders/$orderId",
-            updateOrderDTO,
-            OrderDTO::class.java
-        )
-        return ResponseEntity(obj, HttpStatus.OK)
+        return deleteOrder(orderId)
     }
 }
