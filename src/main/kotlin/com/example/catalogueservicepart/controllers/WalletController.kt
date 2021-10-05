@@ -22,15 +22,15 @@ class WalletController(val walletService: WalletService) {
     @PostMapping("/{walletId}/transaction")
     fun addTransactionToWallet(@PathVariable("walletId")walletId: Long,
                                @RequestBody transactionRequestDTO: TransactionRequestDTO):ResponseEntity<*>{
-        if (transactionRequestDTO.amount>0){
+        return if (transactionRequestDTO.amount>0){
             val username = SecurityContextHolder.getContext().authentication.authorities.filter { it.authority=="ADMIN" }
             if(username.isNotEmpty()){
-                return walletService.addPositiveTransaction(walletId,transactionRequestDTO)
+                walletService.addPositiveTransaction(walletId,transactionRequestDTO)
             }else{
-                return ResponseEntity.ok(ResponseMessage("Not Authorized"))
+                ResponseEntity.ok(ResponseMessage("Not Authorized"))
             }
         }else{
-            return walletService.addNegativeTransaction(walletId,transactionRequestDTO)
+            walletService.addNegativeTransaction(walletId,transactionRequestDTO)
         }
     }
 

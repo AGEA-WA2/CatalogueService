@@ -8,8 +8,8 @@ import org.springframework.http.ResponseEntity
 interface WalletService {
     fun getWallets(): ResponseEntity<*>
     fun createWallet(createWalletDTO: CreateWalletDTO):ResponseEntity<*>
-    fun addPositiveTransaction(walletId:Long,transactionRequestDTO: TransactionRequestDTO):ResponseEntity<*>
-    fun addNegativeTransaction(walletId:Long,transactionRequestDTO: TransactionRequestDTO):ResponseEntity<*>
-    fun getListTransactionBetween(walletId:Long,from:Long,to:Long):ResponseEntity<*>
-    fun getSingleTransaction(walletId:Long,transactionId:Long):ResponseEntity<*>
+    fun addPositiveTransaction(walletID:Long,transactionRequestDTO: TransactionRequestDTO):ResponseEntity<*>
+    fun addNegativeTransaction(walletID:Long,transactionRequestDTO: TransactionRequestDTO):ResponseEntity<*>
+    fun getListTransactionBetween(walletID:Long,from:Long,to:Long):ResponseEntity<*>
+    fun getSingleTransaction(walletID:Long,transactionId:Long):ResponseEntity<*>
 }

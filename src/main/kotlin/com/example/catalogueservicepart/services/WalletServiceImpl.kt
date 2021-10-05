@@ -40,18 +40,18 @@ class WalletServiceImpl(val userRepository: UserRepository, val restTemplate: Re
         return restTemplate.postForEntity("http://${addr.ipAddr}:${addr.port}/wallets/${walletID}/transactions",transactionRequestDTO,TransactionRequestDTO::class.java)
     }
 
-    override fun addPositiveTransaction(walletId: Long, transactionRequestDTO: TransactionRequestDTO):ResponseEntity<*> {
+    override fun addPositiveTransaction(walletID: Long, transactionRequestDTO: TransactionRequestDTO):ResponseEntity<*> {
         val addr = eurekaClient.getApplication("walletService").instances[0]
-        return restTemplate.postForEntity("http://${addr.ipAddr}:${addr.port}/wallets/${walletId}/transactions",transactionRequestDTO,TransactionRequestDTO::class.java)
+        return restTemplate.postForEntity("http://${addr.ipAddr}:${addr.port}/wallets/${walletID}/transactions",transactionRequestDTO,TransactionRequestDTO::class.java)
     }
 
-    override fun getListTransactionBetween(walletId: Long, from: Long, to: Long): ResponseEntity<*> {
-        val url = "${utils.buildUrl("walletService")}/wallets/${walletId}/transactions?from={from}&to={to}"
+    override fun getListTransactionBetween(walletID: Long, from: Long, to: Long): ResponseEntity<*> {
+        val url = "${utils.buildUrl("walletService")}/wallets/${walletID}/transactions?from={from}&to={to}"
         return restTemplate.getForEntity(url,Array<TransactionDTO>::class.java,from,to)
     }
 
-    override fun getSingleTransaction(walletId: Long, transactionId: Long):ResponseEntity<*> {
-        val url = "${utils.buildUrl("walletService")}/wallets/${walletId}/transactions/${transactionId}"
+    override fun getSingleTransaction(walletID: Long, transactionId: Long):ResponseEntity<*> {
+        val url = "${utils.buildUrl("walletService")}/wallets/${walletID}/transactions/${transactionId}"
         //TODO Togliere ID dalla risposta
         return restTemplate.getForEntity(url,TransactionDTO::class.java)
     }
