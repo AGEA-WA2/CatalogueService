@@ -1,6 +1,7 @@
 package com.example.catalogueservicepart.services
 
 import com.example.catalogueservicepart.dto.CreateWalletDTO
+import com.example.catalogueservicepart.dto.TransactionDTO
 import com.example.catalogueservicepart.dto.TransactionRequestDTO
 import com.example.catalogueservicepart.repositories.UserRepository
 import com.example.catalogueservicepart.utils.Utils
@@ -34,13 +35,25 @@ class WalletServiceImpl(val userRepository: UserRepository, val restTemplate: Re
         return restTemplate.postForEntity("http://${addr.ipAddr}:${addr.port}/wallets",createWalletDTO,CreateWalletDTO::class.java)
     }
 
-    override fun addNegativeTransaction(walletId: Long, transactionRequestDTO: TransactionRequestDTO):ResponseEntity<*> {
+    override fun addNegativeTransaction(walletID: Long, transactionRequestDTO: TransactionRequestDTO):ResponseEntity<*> {
         val addr = eurekaClient.getApplication("walletService").instances[0]
-        return ResponseEntity(restTemplate.postForEntity("http://${addr.ipAddr}:${addr.port}/wallets/${walletId}/transactions",transactionRequestDTO,TransactionRequestDTO::class.java),HttpStatus.OK)
+        return restTemplate.postForEntity("http://${addr.ipAddr}:${addr.port}/wallets/${walletID}/transactions",transactionRequestDTO,TransactionRequestDTO::class.java)
     }
 
     override fun addPositiveTransaction(walletId: Long, transactionRequestDTO: TransactionRequestDTO):ResponseEntity<*> {
         val addr = eurekaClient.getApplication("walletService").instances[0]
         return restTemplate.postForEntity("http://${addr.ipAddr}:${addr.port}/wallets/${walletId}/transactions",transactionRequestDTO,TransactionRequestDTO::class.java)
     }
+
+    override fun getListTransactionBetween(walletId: Long, from: Long, to: Long): ResponseEntity<*> {
+        val url = "${utils.buildUrl("walletService")}/wallets/${walletId}/transactions?from={from}&to={to}"
+        return restTemplate.getForEntity(url,Array<TransactionDTO>::class.java,from,to)
+    }
+
+    override fun getSingleTransaction(walletId: Long, transactionId: Long):ResponseEntity<*> {
+        val url = "${utils.buildUrl("walletService")}/wallets/${walletId}/transactions/${transactionId}"
+        //TODO Togliere ID dalla risposta
+        return restTemplate.getForEntity(url,TransactionDTO::class.java)
+    }
+
 }

@@ -23,8 +23,8 @@ class WalletController(val walletService: WalletService) {
     fun addTransactionToWallet(@PathVariable("walletId")walletId: Long,
                                @RequestBody transactionRequestDTO: TransactionRequestDTO):ResponseEntity<*>{
         if (transactionRequestDTO.amount>0){
-            val username = SecurityContextHolder.getContext().authentication.authorities
-            if(username.contains(GrantedAuthority { "ADMIN" })){
+            val username = SecurityContextHolder.getContext().authentication.authorities.filter { it.authority=="ADMIN" }
+            if(username.isNotEmpty()){
                 return walletService.addPositiveTransaction(walletId,transactionRequestDTO)
             }else{
                 return ResponseEntity.ok(ResponseMessage("Not Authorized"))
@@ -37,14 +37,14 @@ class WalletController(val walletService: WalletService) {
     @GetMapping("/{walletId}/transaction")
     fun getListOfWallet(@PathVariable("walletId")walletId: Long,
                         @RequestParam("from")from:Long,
-                        @RequestParam("to")to:Long){
-        println("------------->>>>>QUI")
-
+                        @RequestParam("to")to:Long):ResponseEntity<*>{
+        return walletService.getListTransactionBetween(walletId,from,to)
     }
 
     @GetMapping("/{walletId}/transaction/{transactionId}")
-    fun getTransaction(@PathVariable("walletId")walletId: Long,@PathVariable("transactionId")transactionId:Long){
-        println("------------->>>>>QUAAAAA")
+    fun getTransaction(@PathVariable("walletId")walletId: Long,
+                       @PathVariable("transactionId")transactionId:Long):ResponseEntity<*>{
+        return walletService.getSingleTransaction(walletId,transactionId)
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")

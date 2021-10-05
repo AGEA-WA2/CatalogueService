@@ -10,4 +10,6 @@ interface WalletService {
     fun createWallet(createWalletDTO: CreateWalletDTO):ResponseEntity<*>
     fun addPositiveTransaction(walletId:Long,transactionRequestDTO: TransactionRequestDTO):ResponseEntity<*>
     fun addNegativeTransaction(walletId:Long,transactionRequestDTO: TransactionRequestDTO):ResponseEntity<*>
+    fun getListTransactionBetween(walletId:Long,from:Long,to:Long):ResponseEntity<*>
+    fun getSingleTransaction(walletId:Long,transactionId:Long):ResponseEntity<*>
 }
