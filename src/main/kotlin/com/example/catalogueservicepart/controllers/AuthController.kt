@@ -86,7 +86,6 @@ class AuthController(val emailVerificationTokenRepository: EmailVerificationToke
 //            UsernamePasswordAuthenticationToken(passwordParam.username, passwordParam.oldPassword)
 //        )
         try {
-            //TODO controllare se l'utente da modificare è uguale all'utente attuale
             val checkToken=token.substring(7, token.length)
             if(jwtUtils.validateJwtToken(checkToken)){
                 if(SecurityContextHolder.getContext().authentication.principal==passwordParam.username){

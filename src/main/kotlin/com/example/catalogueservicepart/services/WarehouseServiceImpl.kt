@@ -13,12 +13,22 @@ import org.springframework.web.client.RestTemplate
 @Service
 @Transactional
 class WarehouseServiceImpl(val userRepository: UserRepository, val restTemplate: RestTemplate, val utils: Utils): WarehouseService {
-    override fun getWarehouse(warehouseID: Long): ResponseEntity<*> {
-        TODO("Not yet implemented")
+    override fun getWarehouses(): ResponseEntity<*> {
+        val url = "${utils.buildUrl("warehouseService")}/warehouses"
+        return restTemplate.getForEntity(url, Array<WarehouseDTO>::class.java)
     }
 
-    override fun getWarehouses(): ResponseEntity<*> {
-        TODO("Not yet implemented")
+    override fun getWarehouse(warehouseID: Long): ResponseEntity<*> {
+        val url = "${utils.buildUrl("warehouseService")}/warehouses/{warehouseID}"
+        return restTemplate.getForEntity(url, WarehouseDTO::class.java, warehouseID)
+    }
+
+    override fun addWarehouse(wh: WarehouseBodyDTO): ResponseEntity<*> {
+        return restTemplate.postForEntity(
+            "${utils.buildUrl("warehouseService")}/warehouses",
+            wh,
+            WarehouseDTO::class.java
+        )
     }
 
     override fun updateWarehouse(warehouseID: Long, wh: WarehouseBodyDTO): ResponseEntity<*> {
@@ -28,11 +38,7 @@ class WarehouseServiceImpl(val userRepository: UserRepository, val restTemplate:
     }
 
     override fun deleteWarehouse(warehouseID: Long) {
-         return restTemplate.delete("${utils.buildUrl("WarehouseService")}/warehouses/${warehouseID}",warehouseID)
-    }
-
-    override fun addWarehouse(wh: WarehouseBodyDTO): ResponseEntity<*> {
-        TODO("Not yet implemented")
+        return restTemplate.delete("${utils.buildUrl("WarehouseService")}/warehouses/${warehouseID}", warehouseID)
     }
 
     override fun patchWarehouse(warehouseID: Long, wh: WarehousePatchDTO): ResponseEntity<*> {

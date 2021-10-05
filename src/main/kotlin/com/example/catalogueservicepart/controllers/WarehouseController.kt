@@ -1,4 +1,4 @@
-package com.example.catalogueservicepart.controllers;
+package com.example.catalogueservicepart.controllers
 
 import com.example.catalogueservicepart.dto.WarehouseBodyDTO
 import com.example.catalogueservicepart.dto.WarehousePatchDTO
@@ -13,22 +13,23 @@ import javax.validation.Valid
 @RequestMapping("warehouses")
 class WarehouseController(val warehouseService: WarehouseService) {
 
-//    @GetMapping
-//    fun getAllWarehouses(): ResponseEntity<*> {
-//
-//    }
-//
-//    @GetMapping("/{warehouseId}")
-//    fun getWarehouse(@PathVariable("warehouseId") warehouseId: Long): ResponseEntity<*> {
-//
-//    }
-//
-//    @PostMapping
-//    fun addNewWarehouse(@RequestBody @Valid wh: WarehouseBodyDTO): ResponseEntity<*> {
-//
-//    }
-
     @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping
+    fun getAllWarehouses(): ResponseEntity<*> {
+        return warehouseService.getWarehouses()
+    }
+
+    @GetMapping("/{warehouseId}")
+    fun getWarehouse(@PathVariable("warehouseId") warehouseId: Long): ResponseEntity<*> {
+        return warehouseService.getWarehouse(warehouseId)
+    }
+
+    @PostMapping
+    fun addNewWarehouse(@RequestBody @Valid wh: WarehouseBodyDTO): ResponseEntity<*> {
+        return warehouseService.addWarehouse(wh)
+    }
+
+    @PreAuthorize("ADMIN")
     @PutMapping("/{warehouseId}")
     fun updateWarehouse(
         @PathVariable("warehouseId") warehouseId: Long,
