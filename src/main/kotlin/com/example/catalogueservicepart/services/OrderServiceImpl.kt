@@ -28,7 +28,7 @@ class OrderServiceImpl(val restTemplate: RestTemplate, val userRepository: UserR
 
     override fun getOrders(): ResponseEntity<*> {
         val username = SecurityContextHolder.getContext().authentication.principal.toString()
-        val id = userRepository.findByUsername(username)?.getId()
+        val id = userRepository.findByUsername(username)?.getId() ?: throw AccessDeniedException("Unauthorized user")
         return restTemplate.getForEntity("${utils.buildUrl("orderService")}/orders?buyer=$id", Set::class.java)
     }
 

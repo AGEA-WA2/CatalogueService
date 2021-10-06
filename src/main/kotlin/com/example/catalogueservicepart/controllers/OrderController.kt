@@ -21,21 +21,22 @@ class OrderController(val orderService: OrderService, val restTemplate: RestTemp
 
     @GetMapping
     fun allListOfOrder(): ResponseEntity<*> {
-        return orderService.getOrders()
+        return ResponseEntity(orderService.getOrders(),HttpStatus.OK)
     }
 
     @GetMapping("/{orderId}")
     fun getOrder(@PathVariable("orderId") orderId: Long): ResponseEntity<*> {
-        return orderService.getOrderById(orderId)
+        return ResponseEntity(orderService.getOrderById(orderId),HttpStatus.OK)
     }
 
     @PostMapping
     fun addNewOrder(@RequestBody @Valid orderDTO: OrderDTO, br: BindingResult): ResponseEntity<*> {
+        //TODO non dovrebbe esserci come parametro orderBodyDTO?
         return if (br.hasErrors()) ResponseEntity(
             ApiError(HttpStatus.BAD_REQUEST, "Bad Request", "${br.fieldError?.field} - ${br.fieldError?.defaultMessage}"),
             HttpStatus.BAD_REQUEST
         )
-        else orderService.addNewOrder(orderDTO)
+        else ResponseEntity(orderService.addNewOrder(orderDTO),HttpStatus.OK)
     }
 
     @PatchMapping("/{orderId}")
@@ -43,11 +44,11 @@ class OrderController(val orderService: OrderService, val restTemplate: RestTemp
         @PathVariable("orderId") orderId: Long,
         @RequestBody updateOrderDTO: UpdateOrderDTO
     ): ResponseEntity<*> {
-        return orderService.updateOrder(orderId, updateOrderDTO)
+        return ResponseEntity(orderService.updateOrder(orderId, updateOrderDTO),HttpStatus.OK)
     }
 
     @DeleteMapping("/{orderId}")
     fun deleteOrder(@PathVariable("orderId") orderId: Long): ResponseEntity<*> {
-        return deleteOrder(orderId)
+        return ResponseEntity(deleteOrder(orderId),HttpStatus.OK)
     }
 }

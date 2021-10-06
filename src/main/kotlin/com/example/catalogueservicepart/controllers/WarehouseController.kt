@@ -16,17 +16,17 @@ class WarehouseController(val warehouseService: WarehouseService) {
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping
     fun getAllWarehouses(): ResponseEntity<*> {
-        return warehouseService.getWarehouses()
+        return ResponseEntity(warehouseService.getWarehouses(),HttpStatus.OK)
     }
 
     @GetMapping("/{warehouseId}")
     fun getWarehouse(@PathVariable("warehouseId") warehouseId: Long): ResponseEntity<*> {
-        return warehouseService.getWarehouse(warehouseId)
+        return ResponseEntity(warehouseService.getWarehouse(warehouseId),HttpStatus.OK)
     }
 
     @PostMapping
     fun addNewWarehouse(@RequestBody @Valid wh: WarehouseBodyDTO): ResponseEntity<*> {
-        return warehouseService.addWarehouse(wh)
+        return ResponseEntity(warehouseService.addWarehouse(wh),HttpStatus.OK)
     }
 
     @PreAuthorize("ADMIN")
@@ -35,7 +35,7 @@ class WarehouseController(val warehouseService: WarehouseService) {
         @PathVariable("warehouseId") warehouseId: Long,
         @RequestBody warehouseDTO: WarehouseBodyDTO
     ): ResponseEntity<*> {
-        return warehouseService.updateWarehouse(warehouseId,warehouseDTO)
+        return ResponseEntity(warehouseService.updateWarehouse(warehouseId,warehouseDTO),HttpStatus.OK)
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -44,7 +44,7 @@ class WarehouseController(val warehouseService: WarehouseService) {
         @PathVariable("warehouseId") warehouseId: Long,
         @RequestBody warehousePatchDTO: WarehousePatchDTO
     ): ResponseEntity<*> {
-        return warehouseService.patchWarehouse(warehouseId,warehousePatchDTO)
+        return ResponseEntity(warehouseService.patchWarehouse(warehouseId,warehousePatchDTO),HttpStatus.OK)
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")

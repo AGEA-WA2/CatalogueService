@@ -45,25 +45,27 @@ class AuthController(val emailVerificationTokenRepository: EmailVerificationToke
 
     @PostMapping("/register")
     fun registerUser(@RequestBody userObject: UserObject): ResponseEntity<Any> {
+//        if (userObject.password != userObject.confirmPassword)
+//            return ResponseEntity.badRequest().body(ResponseMessage("Password and confirm password must be equal"))
+//
+//        try {
+//            userDetailsService.createUser(userObject)
+//        }catch (e:Exception){
+//            return ResponseEntity.badRequest().body(ResponseMessage(e.message))
+//        }
+//        return ResponseEntity.ok(ResponseMessage("User registered"))
         if (userObject.password != userObject.confirmPassword)
-            return ResponseEntity.badRequest().body(ResponseMessage("Password and confirm password must be equal"))
-
-        try {
-            userDetailsService.createUser(userObject)
-        }catch (e:Exception){
-            return ResponseEntity.badRequest().body(ResponseMessage(e.message))
-        }
-        return ResponseEntity.ok(ResponseMessage("User registered"))
+            return ResponseEntity("Password and confirm password must be equal", HttpStatus.BAD_REQUEST)
+        return ResponseEntity(userDetailsService.createUser(userObject),HttpStatus.OK)
     }
 
     @GetMapping("/registrationConfirm")
     fun confirmUserRegistration(@RequestParam("token") token: String): ResponseEntity<Any> {
         val emailVerificationToken = emailVerificationTokenRepository.findByToken(token)
         if (Date().after(emailVerificationToken?.expiryDate) || emailVerificationToken == null)
-            return ResponseEntity.badRequest().body(ResponseMessage("Token expired"))
+            return ResponseEntity("Token expired",HttpStatus.UNAUTHORIZED)
 
-        userDetailsService.confirmRegistration(emailVerificationToken.user.username)
-        return ResponseEntity.ok(ResponseMessage("Registration confirmed"))
+        return ResponseEntity(userDetailsService.confirmRegistration(emailVerificationToken.user.username),HttpStatus.OK)
     }
 
     @PostMapping("/signin")
@@ -74,9 +76,9 @@ class AuthController(val emailVerificationTokenRepository: EmailVerificationToke
 
         return if (authentication.isAuthenticated) {
             val token = jwtUtils.generateJwtToken(authentication)
-            ResponseEntity.ok(token)
+            ResponseEntity(token,HttpStatus.OK)
         } else {
-            ResponseEntity("Wrong username or password!", HttpStatus.BAD_REQUEST)
+            ResponseEntity("Wrong username or password!", HttpStatus.UNAUTHORIZED)
         }
     }
 
@@ -85,24 +87,17 @@ class AuthController(val emailVerificationTokenRepository: EmailVerificationToke
 //        val authentication = authenticationManager.authenticate(
 //            UsernamePasswordAuthenticationToken(passwordParam.username, passwordParam.oldPassword)
 //        )
-        try {
-            val checkToken=token.substring(7, token.length)
-            if(jwtUtils.validateJwtToken(checkToken)){
-                if(SecurityContextHolder.getContext().authentication.principal==passwordParam.username){
-                    userDetailsService.changePassword(passwordParam.username,passwordParam.oldPassword,passwordParam.newPassword)
-                }else{
-                    userDetailsService.sendWarningEmail(passwordParam.username,"Someone has tried to change your password")
-                    return ResponseEntity("Not Authorized to change other user password",HttpStatus.BAD_REQUEST,)
-                }
+        val checkToken=token.substring(7, token.length)
+        if(jwtUtils.validateJwtToken(checkToken)){
+            if(SecurityContextHolder.getContext().authentication.principal==passwordParam.username){
+                return ResponseEntity(userDetailsService.changePassword(passwordParam.username,passwordParam.oldPassword,passwordParam.newPassword),HttpStatus.OK)
             }else{
                 userDetailsService.sendWarningEmail(passwordParam.username,"Someone has tried to change your password")
-                return ResponseEntity("Not Authorized",HttpStatus.BAD_REQUEST,)
+                return ResponseEntity("Not Authorized",HttpStatus.UNAUTHORIZED,)
             }
-
-        }catch (e:Exception){
-            return ResponseEntity.badRequest().body(e.message)
+        }else{
+            userDetailsService.sendWarningEmail(passwordParam.username,"Someone has tried to change your password")
+            return ResponseEntity("Not Authorized",HttpStatus.UNAUTHORIZED,)
         }
-        return ResponseEntity.ok(ResponseMessage("Password modified successfully!"))
-
     }
 }
