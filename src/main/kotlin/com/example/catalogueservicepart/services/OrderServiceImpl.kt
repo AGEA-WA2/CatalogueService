@@ -17,6 +17,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.PathVariable
 
@@ -35,8 +36,12 @@ class OrderServiceImpl(val restTemplate: RestTemplate, val userRepository: UserR
     override fun getOrderById(order_id: Long): ResponseEntity<*> {
         val auth = SecurityContextHolder.getContext().authentication
         val id = userRepository.findByUsername(auth.principal.toString())?.getId()
-        val response = restTemplate.getForEntity("${utils.buildUrl("orderService")}/$order_id", OrderDTO::class.java)
-        if (auth.authorities.none { it.authority == "ADMIN" } && response.body!!.buyer != id)
+        val response = restTemplate.getForEntity("${utils.buildUrl("orderService")}/orders/{orderId}", OrderDTO::class.java,order_id)
+        if(response.statusCode==HttpStatus.BAD_REQUEST){
+            return ResponseEntity("The order ID must be greater than or equal to 0.",HttpStatus.BAD_REQUEST)
+        }else if (response.statusCode==HttpStatus.NOT_FOUND){
+            return ResponseEntity("Order ID not found",HttpStatus.BAD_REQUEST)
+        }else if (auth.authorities.none { it.authority == "ADMIN" } && response.body!!.buyer != id)
             throw AccessDeniedException("Unauthorized user")
         return response
     }

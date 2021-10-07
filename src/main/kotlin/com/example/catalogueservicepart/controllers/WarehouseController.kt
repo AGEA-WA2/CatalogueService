@@ -29,7 +29,7 @@ class WarehouseController(val warehouseService: WarehouseService) {
         return ResponseEntity(warehouseService.addWarehouse(wh),HttpStatus.OK)
     }
 
-    @PreAuthorize("ADMIN")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/{warehouseId}")
     fun updateWarehouse(
         @PathVariable("warehouseId") warehouseId: Long,
