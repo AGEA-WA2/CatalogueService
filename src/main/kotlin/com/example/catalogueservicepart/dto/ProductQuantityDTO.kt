@@ -8,8 +8,8 @@ data class ProductQuantityDTO(
     val id: Long?,
     @NotNull val warehouseId: Long?,
     @NotNull val productId: Long?,
-    val quantity: Int?,
-    val alarm: Int?
+    @NotNull val quantity: Long?,
+    @NotNull val alarm: Int?
 )
 
 data class OrderToWarehouseDTO(
