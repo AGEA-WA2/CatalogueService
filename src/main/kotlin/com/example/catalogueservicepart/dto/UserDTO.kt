@@ -9,6 +9,8 @@ data class UserDTO (
     val id: Long?,
     val username: String,
     val email: String,
+    val firstname: String,
+    val lastname: String,
     val address:String,
     val role:String,
     val isEnabled: Boolean,

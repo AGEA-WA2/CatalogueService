@@ -26,19 +26,22 @@ class User : EntityBase<Long>() {
     @Pattern(regexp = "^([a-z0-9]+([-_.][a-z0-9]+)*)@([a-z0-9]+\\.)+[a-z]{2,}$")
     var email: String = ""
 
-    //TODO da legare con Delivery
-    var address:String=""
+    var address:String? =""
 
     @Column(columnDefinition = "boolean default false")
     var isEnabled: Boolean = false
 
     var roles: String = ""
 
-    @OneToOne(mappedBy = "user", targetEntity = Customer::class, cascade = [CascadeType.ALL])
-    var customer: Customer? = null
-
     @OneToOne(mappedBy = "user", targetEntity = EmailVerificationToken::class, cascade = [CascadeType.ALL])
     var token: EmailVerificationToken? = null
+
+    @Column
+    var firstName: String = "no-name"
+
+    //@Column(nullable = false)
+    @Column
+    var lastName: String = "no-name"
 
     fun addRole(role: Rolename) {
         val newRole = role.name
@@ -72,8 +75,4 @@ class User : EntityBase<Long>() {
         return result
     }
 
-    fun addCustomer(customer: Customer){
-        customer.user = this
-        this.customer = customer
-    }
 }

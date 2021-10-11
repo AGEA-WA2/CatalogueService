@@ -46,6 +46,12 @@ class UserController(val userDetailsServiceImpl: UserDetailsServiceImpl) {
         if (updateUserDTO.address != null) user = userDetailsServiceImpl.changeAddress(updateUserDTO.address, username)
             ?: return ResponseEntity(ResponseMessage("User not found"), HttpStatus.NOT_FOUND)
 
+        if(updateUserDTO.firstname != null) user = userDetailsServiceImpl.changeFirstname(updateUserDTO.firstname, username)
+            ?: return ResponseEntity(ResponseMessage("User not found"), HttpStatus.NOT_FOUND)
+
+        if(updateUserDTO.lastname != null) user = userDetailsServiceImpl.changeLastname(updateUserDTO.lastname, username)
+            ?: return ResponseEntity(ResponseMessage("User not found"), HttpStatus.NOT_FOUND)
+
         if (updateUserDTO.role != null && auth.authorities.any { it.authority == "ADMIN" }) {
             user = userDetailsServiceImpl.removeRole("ADMIN", username)
             user = userDetailsServiceImpl.removeRole("CUSTOMER", username)

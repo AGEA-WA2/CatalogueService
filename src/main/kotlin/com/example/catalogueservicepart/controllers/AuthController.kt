@@ -1,6 +1,7 @@
 package com.example.catalogueservicepart.controllers
 
 import com.example.catalogueservicepart.dto.ResponseMessage
+import com.example.catalogueservicepart.dto.toUserDTO
 import com.example.catalogueservicepart.repositories.EmailVerificationTokenRepository
 import com.example.catalogueservicepart.security.JwtUtils
 import com.example.catalogueservicepart.services.UserDetailsServiceImpl
@@ -20,6 +21,9 @@ data class UserObject(
     @Email
     var email: String,
     var password: String,
+    var firstname: String,
+    var lastname: String,
+    var address: String?,
     var confirmPassword: String,
 )
 
@@ -56,7 +60,7 @@ class AuthController(val emailVerificationTokenRepository: EmailVerificationToke
 //        return ResponseEntity.ok(ResponseMessage("User registered"))
         if (userObject.password != userObject.confirmPassword)
             return ResponseEntity("Password and confirm password must be equal", HttpStatus.BAD_REQUEST)
-        return ResponseEntity(userDetailsService.createUser(userObject),HttpStatus.OK)
+        return ResponseEntity(userDetailsService.createUser(userObject).toUserDTO(),HttpStatus.OK)
     }
 
     @GetMapping("/registrationConfirm")

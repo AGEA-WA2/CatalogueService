@@ -15,6 +15,8 @@ class UserDetailsDTO(
     @field:NotNull private val password: String,
     @field:NotNull val email: String,
     @field:NotNull private val address:String,
+    @field:NotNull val firstname: String,
+    @field:NotNull val lastname: String,
     private val role:String,
     private val isEnabled: Boolean,
     @field:Valid private val authorities: MutableList<GrantedAuthority>?
@@ -37,7 +39,7 @@ class UserDetailsDTO(
     }
 
     fun getAddress():String{
-        return address;
+        return address
     }
 
     override fun isAccountNonExpired(): Boolean {
@@ -63,7 +65,9 @@ fun User.toUserDetailsDTO(): UserDetailsDTO {
         username,
         password,
         email,
-        address,
+        address?: "",
+        firstName,
+        lastName,
         roles,
         isEnabled,
         retrieveRoles().map { SimpleGrantedAuthority(it.name) }.toMutableList()
@@ -75,6 +79,8 @@ fun UserDetailsDTO.toUserDTO(): UserDTO {
         id,
         username,
         email,
+        firstname,
+        lastname,
         getAddress(),
         getRole(),
         isEnabled

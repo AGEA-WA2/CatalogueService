@@ -1,10 +1,8 @@
 package com.example.catalogueservicepart.services
 
 import com.example.catalogueservicepart.controllers.UserObject
-import com.example.catalogueservicepart.domain.Customer
 import com.example.catalogueservicepart.domain.User
 import com.example.catalogueservicepart.dto.*
-import com.example.catalogueservicepart.repositories.CustomerRepository
 import com.example.catalogueservicepart.repositories.UserRepository
 import com.example.catalogueservicepart.roles.Rolename
 import com.example.catalogueservicepart.utils.Utils
@@ -16,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.postForEntity
+import java.util.*
 import javax.transaction.Transactional
 
 @Service
@@ -25,7 +24,6 @@ class UserDetailsServiceImpl(
     val userRepository: UserRepository,
     val notificationService: NotificationServiceImpl,
     val mailService: MailService,
-    val customerRepository: CustomerRepository,
     val utils: Utils
 ) : UserDetailsService {
 
@@ -44,10 +42,11 @@ class UserDetailsServiceImpl(
         user.password = passwordEncoder?.encode(userObject.password).toString()
         user.email = userObject.email
         user.isEnabled = false
+        user.firstName = userObject.firstname
+        user.lastName = userObject.lastname
+        user.address = userObject.address
         user.addRole(Rolename.CUSTOMER)
 
-        val customer = Customer()
-        user.addCustomer(customer)
         userRepository.save(user)
 
         val emailVerificationToken = notificationService.createEmailVerificationToken(user.username)
@@ -71,10 +70,8 @@ class UserDetailsServiceImpl(
         val user = userRepository.findByUsername(username)
             ?: throw UsernameNotFoundException("Specified username doesn't exist")
 
-        user.addRole(Rolename.valueOf(role.toUpperCase()))
-        if (user.customer == null && role == "CUSTOMER"){
-            user.addCustomer(Customer())
-        }
+        user.addRole(Rolename.valueOf(role.uppercase(Locale.getDefault())))
+
         userRepository.save(user)
         return user.toUserDetailsDTO()
     }
@@ -82,11 +79,8 @@ class UserDetailsServiceImpl(
     fun removeRole(role: String, username: String): UserDetailsDTO {
         val user = userRepository.findByUsername(username)
             ?: throw UsernameNotFoundException("Specified username doesn't exist")
-        user.removeRole(Rolename.valueOf(role.toUpperCase()))
-        if(user.customer != null) {
-            customerRepository.deleteById(user.customer?.getId()!!)
-            user.customer = null
-        }
+        user.removeRole(Rolename.valueOf(role.uppercase(Locale.getDefault())))
+
 
         userRepository.save(user)
         return user.toUserDetailsDTO()
@@ -199,4 +193,19 @@ class UserDetailsServiceImpl(
         userRepository.save(user)
         return user.toUserDetailsDTO()
     }
+
+    fun changeFirstname(firstname: String, username: String): UserDetailsDTO? {
+        val user = userRepository.findByUsername(username) ?: return null
+        user.firstName = firstname
+        userRepository.save(user)
+        return user.toUserDetailsDTO()
+    }
+
+    fun changeLastname(lastname: String, username: String): UserDetailsDTO? {
+        val user = userRepository.findByUsername(username) ?: return null
+        user.lastName = lastname
+        userRepository.save(user)
+        return user.toUserDetailsDTO()
+    }
+
 }
