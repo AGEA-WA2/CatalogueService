@@ -10,4 +10,4 @@ data class WalletDTO(
 
 data class CreateWalletDTO(
     @field:Positive val userID: Long,
-    @field:Positive val balance: Double)
+    val balance: Double)

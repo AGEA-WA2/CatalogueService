@@ -3,26 +3,30 @@ package com.example.catalogueservicepart.services
 import com.example.catalogueservicepart.controllers.UserObject
 import com.example.catalogueservicepart.domain.Customer
 import com.example.catalogueservicepart.domain.User
-import com.example.catalogueservicepart.dto.UserDetailsDTO
-import com.example.catalogueservicepart.dto.toUserDetailsDTO
+import com.example.catalogueservicepart.dto.*
 import com.example.catalogueservicepart.repositories.CustomerRepository
 import com.example.catalogueservicepart.repositories.UserRepository
 import com.example.catalogueservicepart.roles.Rolename
+import com.example.catalogueservicepart.utils.Utils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.postForEntity
 import javax.transaction.Transactional
 
 @Service
 @Transactional
 class UserDetailsServiceImpl(
+    val restTemplate: RestTemplate,
     val userRepository: UserRepository,
     val notificationService: NotificationServiceImpl,
     val mailService: MailService,
-    val customerRepository: CustomerRepository
+    val customerRepository: CustomerRepository,
+    val utils: Utils
 ) : UserDetailsService {
 
     @Autowired
@@ -127,9 +131,18 @@ class UserDetailsServiceImpl(
     fun confirmRegistration(username: String): UserDetailsDTO {
         val user = userRepository.findByUsername(username)
             ?: throw UsernameNotFoundException("Specified username doesn't exist")
+        if(!user.isEnabled) {
+            user.isEnabled = true
+            val wallet = CreateWalletDTO(user.getId()!!, 0.0)
 
-        user.isEnabled = true
-        userRepository.save(user)
+            restTemplate.postForEntity(
+                "${utils.buildUrl("walletService")}/wallets",
+                wallet,
+                WalletDTO::class.java
+            )
+
+            userRepository.save(user)
+        }
         return user.toUserDetailsDTO()
     }
 
