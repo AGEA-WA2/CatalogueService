@@ -4,6 +4,7 @@ import com.example.catalogueservicepart.dto.ResponseMessage
 import com.example.catalogueservicepart.services.UserDetailsServiceImpl
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -12,25 +13,14 @@ class AdminController(val userDetailsService: UserDetailsServiceImpl) {
 
 
     @PostMapping("/makeAdmin")
+    @PreAuthorize("hasAuthority('ADMIN')")
     fun makeAdmin(@RequestParam("username") username: String): ResponseEntity<*> {
-//        try {
-//            userDetailsService.customerToAdmin(username)
-//        } catch (e: Exception) {
-//            return ResponseEntity.badRequest().body(ResponseMessage(e.message))
-//        }
-//        return ResponseEntity.ok(ResponseMessage("Changed successfully"))
-
         return ResponseEntity(userDetailsService.customerToAdmin(username),HttpStatus.OK)
     }
 
     @PostMapping("/makeCustomer")
+    @PreAuthorize("hasAuthority('ADMIN')")
     fun makeCustomer(@RequestParam("username") username: String): ResponseEntity<Any> {
-//        try {
-//            userDetailsService.adminToCustomer(username)
-//        } catch (e: Exception) {
-//            return ResponseEntity.badRequest().body(ResponseMessage(e.message))
-//        }
-//        return ResponseEntity.ok(ResponseMessage("Changed successfully"))
         return ResponseEntity(userDetailsService.adminToCustomer(username),HttpStatus.OK)
     }
 

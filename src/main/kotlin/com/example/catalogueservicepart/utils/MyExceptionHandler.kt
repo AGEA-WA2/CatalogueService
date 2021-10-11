@@ -251,7 +251,7 @@ class MyExceptionHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(DataIntegrityViolationException::class)
     fun handleDataIntegrityViolation(ex: DataIntegrityViolationException): ResponseEntity<Any?>? {
         logger.info(ex.javaClass.name)
-        val apiError = ApiError(HttpStatus.BAD_REQUEST, ex.localizedMessage, "SQL constraint violated")
+        val apiError = ApiError(HttpStatus.BAD_REQUEST, ex.mostSpecificCause.toString(), "SQL constraint violated")
         return ResponseEntity(apiError, HttpHeaders(), apiError.status!!)
     }
 

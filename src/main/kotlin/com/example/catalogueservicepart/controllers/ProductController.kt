@@ -14,33 +14,29 @@ class ProductController(val productService: ProductService) {
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     fun addNewProduct(@RequestBody newProduct: ProductBodyDTO): ResponseEntity<*> {
-        return ResponseEntity(productService.createProduct(newProduct),HttpStatus.OK)
+        return productService.createProduct(newProduct)
     }
 
     @GetMapping
     fun retrieveProductByCategory(@RequestParam("category") category: String?): ResponseEntity<*> {
-        return ResponseEntity(productService.getAllProductsOrByCategory(category),HttpStatus.OK)
+        return productService.getAllProductsOrByCategory(category)
     }
 
-    //TODO Ho cambiato ResponseEntity<ProductDTO> in ResponseEntity<*> in tutte le chiamate perchè dava problemi
     @GetMapping("/{productId}")
-    //fun getProductId(@PathVariable("productId") productId: Long): ResponseEntity<ProductDTO>
     fun getProductId(@PathVariable("productId") productId: Long): ResponseEntity<*>{
-        return ResponseEntity(productService.getProductById(productId),HttpStatus.OK)
+        return productService.getProductById(productId)
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/{productId}")
-    //fun updateProductById(@PathVariable("productId") productId: Long, @RequestBody productBodyDTO: ProductBodyDTO): ResponseEntity<ProductDTO>
     fun updateProductById(@PathVariable("productId") productId: Long, @RequestBody productBodyDTO: ProductBodyDTO): ResponseEntity<*>{
-        return ResponseEntity(productService.updateOrCreateProduct(productId, productBodyDTO),HttpStatus.OK)
+        return productService.updateOrCreateProduct(productId, productBodyDTO)
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PatchMapping("/{productId}")
-    //fun patchProductById(@PathVariable("productId") productId: Long, @RequestBody productPatchDTO: ProductPatchDTO): ResponseEntity<ProductDTO>
     fun patchProductById(@PathVariable("productId") productId: Long, @RequestBody productPatchDTO: ProductPatchDTO): ResponseEntity<*>{
-        return ResponseEntity(productService.updateExistingProduct(productId, productPatchDTO),HttpStatus.OK)
+        return productService.updateExistingProduct(productId, productPatchDTO)
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -50,21 +46,18 @@ class ProductController(val productService: ProductService) {
     }
 
     @GetMapping("/{productId}/picture")
-    //fun getPicture(@PathVariable("productId") productId: Long): ResponseEntity<PictureUrlDTO?>
     fun getPicture(@PathVariable("productId") productId: Long): ResponseEntity<*> {
-        return ResponseEntity(productService.getProductPictureUrl(productId),HttpStatus.OK)
+        return productService.getProductPictureUrl(productId)
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/{productId}/picture")
-    //fun updatePicture(@PathVariable("productId") productId: Long, @RequestBody pictureUrl: PictureUrlDTO): ResponseEntity<ProductDTO>
     fun updatePicture(@PathVariable("productId") productId: Long, @RequestBody pictureUrl: PictureUrlDTO): ResponseEntity<*>{
-        return ResponseEntity(productService.updateProductPictureUrl(productId, pictureUrl),HttpStatus.OK)
+        return productService.updateProductPictureUrl(productId, pictureUrl)
     }
 
     @GetMapping("/{productId}/warehouses")
-    //fun getWarehouseByProduct(@PathVariable("productId") productId: Long): ResponseEntity<Array<ProductQuantityDTO>>
     fun getWarehouseByProduct(@PathVariable("productId") productId: Long): ResponseEntity<*> {
-        return ResponseEntity(productService.getProductWarehouses(productId),HttpStatus.OK)
+        return productService.getProductWarehouses(productId)
     }
 }

@@ -49,15 +49,6 @@ class AuthController(val emailVerificationTokenRepository: EmailVerificationToke
 
     @PostMapping("/register")
     fun registerUser(@RequestBody userObject: UserObject): ResponseEntity<Any> {
-//        if (userObject.password != userObject.confirmPassword)
-//            return ResponseEntity.badRequest().body(ResponseMessage("Password and confirm password must be equal"))
-//
-//        try {
-//            userDetailsService.createUser(userObject)
-//        }catch (e:Exception){
-//            return ResponseEntity.badRequest().body(ResponseMessage(e.message))
-//        }
-//        return ResponseEntity.ok(ResponseMessage("User registered"))
         if (userObject.password != userObject.confirmPassword)
             return ResponseEntity("Password and confirm password must be equal", HttpStatus.BAD_REQUEST)
         return ResponseEntity(userDetailsService.createUser(userObject).toUserDTO(),HttpStatus.OK)
@@ -88,20 +79,17 @@ class AuthController(val emailVerificationTokenRepository: EmailVerificationToke
 
     @PostMapping("/changePassword")
     fun change(@RequestBody passwordParam:UserChangePassword,@RequestHeader("Authorization")token:String):ResponseEntity<Any>{
-//        val authentication = authenticationManager.authenticate(
-//            UsernamePasswordAuthenticationToken(passwordParam.username, passwordParam.oldPassword)
-//        )
         val checkToken=token.substring(7, token.length)
-        if(jwtUtils.validateJwtToken(checkToken)){
+        return if(jwtUtils.validateJwtToken(checkToken)){
             if(SecurityContextHolder.getContext().authentication.principal==passwordParam.username){
-                return ResponseEntity(userDetailsService.changePassword(passwordParam.username,passwordParam.oldPassword,passwordParam.newPassword),HttpStatus.OK)
+                ResponseEntity(userDetailsService.changePassword(passwordParam.username,passwordParam.oldPassword,passwordParam.newPassword),HttpStatus.OK)
             }else{
                 userDetailsService.sendWarningEmail(passwordParam.username,"Someone has tried to change your password")
-                return ResponseEntity("Not Authorized",HttpStatus.UNAUTHORIZED,)
+                ResponseEntity("Not Authorized",HttpStatus.UNAUTHORIZED,)
             }
         }else{
             userDetailsService.sendWarningEmail(passwordParam.username,"Someone has tried to change your password")
-            return ResponseEntity("Not Authorized",HttpStatus.UNAUTHORIZED,)
+            ResponseEntity("Not Authorized",HttpStatus.UNAUTHORIZED,)
         }
     }
 }

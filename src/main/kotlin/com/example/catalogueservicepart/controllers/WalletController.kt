@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*
 class WalletController(val walletService: WalletService) {
     @GetMapping
     fun getWallet():ResponseEntity<*>{
-        return ResponseEntity(walletService.getWallets(),HttpStatus.OK)
+        return walletService.getWallets()
     }
 
     @PostMapping("/{walletId}/transaction")
@@ -27,12 +27,12 @@ class WalletController(val walletService: WalletService) {
         return if (transactionRequestDTO.amount>0){
             val username = SecurityContextHolder.getContext().authentication.authorities.filter { it.authority=="ADMIN" }
             if(username.isNotEmpty()){
-                ResponseEntity(walletService.addPositiveTransaction(walletId,transactionRequestDTO),HttpStatus.OK)
+                walletService.addPositiveTransaction(walletId,transactionRequestDTO)
             }else{
                 throw AccessDeniedException("Unauthorized user")
             }
         }else{
-            ResponseEntity(walletService.addNegativeTransaction(walletId,transactionRequestDTO),HttpStatus.OK)
+            walletService.addNegativeTransaction(walletId,transactionRequestDTO)
         }
     }
 
@@ -40,18 +40,18 @@ class WalletController(val walletService: WalletService) {
     fun getListOfWallet(@PathVariable("walletId")walletId: Long,
                         @RequestParam("from")from:Long,
                         @RequestParam("to")to:Long):ResponseEntity<*>{
-        return ResponseEntity(walletService.getListTransactionBetween(walletId,from,to),HttpStatus.OK)
+        return walletService.getListTransactionBetween(walletId,from,to)
     }
 
     @GetMapping("/{walletId}/transaction/{transactionId}")
     fun getTransaction(@PathVariable("walletId")walletId: Long,
                        @PathVariable("transactionId")transactionId:Long):ResponseEntity<*>{
-        return ResponseEntity(walletService.getSingleTransaction(walletId,transactionId),HttpStatus.OK)
+        return walletService.getSingleTransaction(walletId,transactionId)
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     fun createWallet(@RequestBody createWalletDTO: CreateWalletDTO):ResponseEntity<*>{
-        return ResponseEntity(walletService.createWallet(createWalletDTO),HttpStatus.OK)
+        return walletService.createWallet(createWalletDTO)
     }
 }

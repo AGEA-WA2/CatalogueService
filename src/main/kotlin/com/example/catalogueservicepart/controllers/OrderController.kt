@@ -10,6 +10,7 @@ import com.example.catalogueservicepart.utils.ApiError
 import com.example.catalogueservicepart.utils.Utils
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.RestTemplate
@@ -21,12 +22,12 @@ class OrderController(val orderService: OrderService, val restTemplate: RestTemp
 
     @GetMapping
     fun allListOfOrder(): ResponseEntity<*> {
-        return ResponseEntity(orderService.getOrders(),HttpStatus.OK)
+        return orderService.getOrders()
     }
 
     @GetMapping("/{orderId}")
     fun getOrder(@PathVariable("orderId") orderId: Long): ResponseEntity<*> {
-        return ResponseEntity(orderService.getOrderById(orderId),HttpStatus.OK)
+        return orderService.getOrderById(orderId)
     }
 
     @PostMapping
@@ -36,19 +37,20 @@ class OrderController(val orderService: OrderService, val restTemplate: RestTemp
             ApiError(HttpStatus.BAD_REQUEST, "Bad Request", "${br.fieldError?.field} - ${br.fieldError?.defaultMessage}"),
             HttpStatus.BAD_REQUEST
         )
-        else ResponseEntity(orderService.addNewOrder(orderDTO),HttpStatus.OK)
+        else orderService.addNewOrder(orderDTO)
     }
 
     @PatchMapping("/{orderId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     fun updateOrder(
         @PathVariable("orderId") orderId: Long,
         @RequestBody updateOrderDTO: UpdateOrderDTO
     ): ResponseEntity<*> {
-        return ResponseEntity(orderService.updateOrder(orderId, updateOrderDTO),HttpStatus.OK)
+        return orderService.updateOrder(orderId, updateOrderDTO)
     }
 
     @DeleteMapping("/{orderId}")
     fun deleteOrder(@PathVariable("orderId") orderId: Long): ResponseEntity<*> {
-        return ResponseEntity(deleteOrder(orderId),HttpStatus.OK)
+        return deleteOrder(orderId)
     }
 }

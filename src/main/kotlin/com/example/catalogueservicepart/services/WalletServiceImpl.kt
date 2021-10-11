@@ -3,6 +3,7 @@ package com.example.catalogueservicepart.services
 import com.example.catalogueservicepart.dto.CreateWalletDTO
 import com.example.catalogueservicepart.dto.TransactionDTO
 import com.example.catalogueservicepart.dto.TransactionRequestDTO
+import com.example.catalogueservicepart.dto.WalletDTO
 import com.example.catalogueservicepart.repositories.UserRepository
 import com.example.catalogueservicepart.utils.Utils
 import com.netflix.discovery.EurekaClient
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -46,13 +48,22 @@ class WalletServiceImpl(val userRepository: UserRepository, val restTemplate: Re
     }
 
     override fun getListTransactionBetween(walletID: Long, from: Long, to: Long): ResponseEntity<*> {
+        val auth = SecurityContextHolder.getContext().authentication
+        val wallet = restTemplate.getForObject("${utils.buildUrl(" walletService ")}/wallets/$walletID", WalletDTO::class.java)
+
+        if(auth.authorities.none{it.authority == "ADMIN"} && wallet!!.userID != userRepository.findByUsername(auth.principal.toString())!!.getId())
+            throw AccessDeniedException("Unauthorized user")
         val url = "${utils.buildUrl("walletService")}/wallets/${walletID}/transactions?from={from}&to={to}"
         return restTemplate.getForEntity(url,Array<TransactionDTO>::class.java,from,to)
     }
 
     override fun getSingleTransaction(walletID: Long, transactionId: Long):ResponseEntity<*> {
+        val auth = SecurityContextHolder.getContext().authentication
+        val wallet = restTemplate.getForObject("${utils.buildUrl(" walletService ")}/wallets/$walletID", WalletDTO::class.java)
+
+        if(auth.authorities.none{it.authority == "ADMIN"} && wallet!!.userID != userRepository.findByUsername(auth.principal.toString())!!.getId())
+            throw AccessDeniedException("Unauthorized user")
         val url = "${utils.buildUrl("walletService")}/wallets/${walletID}/transactions/${transactionId}"
-        //TODO Togliere ID dalla risposta
         return restTemplate.getForEntity(url,TransactionDTO::class.java)
     }
 

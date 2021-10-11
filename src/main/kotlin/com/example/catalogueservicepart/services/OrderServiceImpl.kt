@@ -47,6 +47,9 @@ class OrderServiceImpl(val restTemplate: RestTemplate, val userRepository: UserR
     }
 
     override fun addNewOrder(orderDTO: OrderDTO): ResponseEntity<*> {
+        val auth = SecurityContextHolder.getContext().authentication
+        if(auth.authorities.none{it.authority == "ADMIN"} && orderDTO.buyer != userRepository.findByUsername(auth.principal.toString())?.getId())
+            throw AccessDeniedException("Unauthorized user")
         return restTemplate.postForEntity("${utils.buildUrl("orderService")}/orders", orderDTO, OrderDTO::class.java)
     }
 
@@ -61,6 +64,11 @@ class OrderServiceImpl(val restTemplate: RestTemplate, val userRepository: UserR
     }
 
     override fun deleteOrder(orderId: Long): ResponseEntity<*> {
+        val auth = SecurityContextHolder.getContext().authentication
+        val orderDTO = restTemplate.getForObject("${utils.buildUrl("orderService")}/orders/$orderId", OrderDTO::class.java)
+        if(auth.authorities.none{it.authority == "ADMIN"} && orderDTO!!.buyer != userRepository.findByUsername(auth.principal.toString())?.getId())
+            throw AccessDeniedException("Unauthorized user")
+
         val updateOrderDTO = UpdateOrderDTO()
         updateOrderDTO.status = Status.CANCELED
         return ResponseEntity(

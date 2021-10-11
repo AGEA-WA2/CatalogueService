@@ -65,5 +65,4 @@ class UserController(val userDetailsServiceImpl: UserDetailsServiceImpl) {
         return ResponseEntity(user.toUserDTO(), HttpStatus.OK)
     }
 
-    //TODO(aggiungere l'exception handler)
 }
