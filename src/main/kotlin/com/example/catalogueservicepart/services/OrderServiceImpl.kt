@@ -48,8 +48,10 @@ class OrderServiceImpl(val restTemplate: RestTemplate, val userRepository: UserR
 
     override fun addNewOrder(orderDTO: OrderDTO): ResponseEntity<*> {
         val auth = SecurityContextHolder.getContext().authentication
-        if(auth.authorities.none{it.authority == "ADMIN"} && orderDTO.buyer != userRepository.findByUsername(auth.principal.toString())?.getId())
+        val user = userRepository.findByUsername(auth.principal.toString())
+        if(auth.authorities.none{it.authority == "ADMIN"} && orderDTO.buyer != user!!.getId())
             throw AccessDeniedException("Unauthorized user")
+        orderDTO.email = user!!.email
         return restTemplate.postForEntity("${utils.buildUrl("orderService")}/orders", orderDTO, OrderDTO::class.java)
     }
 
