@@ -51,6 +51,6 @@ class OrderController(val orderService: OrderService, val restTemplate: RestTemp
 
     @DeleteMapping("/{orderId}")
     fun deleteOrder(@PathVariable("orderId") orderId: Long): ResponseEntity<*> {
-        return deleteOrder(orderId)
+        return orderService.deleteOrder(orderId)
     }
 }

@@ -57,7 +57,7 @@ class AuthController(val emailVerificationTokenRepository: EmailVerificationToke
     @GetMapping("/registrationConfirm")
     fun confirmUserRegistration(@RequestParam("token") token: String): ResponseEntity<Any> {
         val emailVerificationToken = emailVerificationTokenRepository.findByToken(token)
-        if (Date().after(emailVerificationToken?.expiryDate) || emailVerificationToken == null)
+        if (emailVerificationToken == null || Date().after(emailVerificationToken.expiryDate))
             return ResponseEntity("Token expired",HttpStatus.UNAUTHORIZED)
 
         return ResponseEntity(userDetailsService.confirmRegistration(emailVerificationToken.user.username),HttpStatus.OK)

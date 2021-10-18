@@ -70,7 +70,7 @@ class UserDetailsServiceImpl(
         val user = userRepository.findByUsername(username)
             ?: throw UsernameNotFoundException("Specified username doesn't exist")
 
-        user.addRole(Rolename.valueOf(role.uppercase(Locale.getDefault())))
+        user.addRole(Rolename.valueOf(role.toUpperCase(Locale.getDefault())))
 
         userRepository.save(user)
         return user.toUserDetailsDTO()
@@ -79,7 +79,7 @@ class UserDetailsServiceImpl(
     fun removeRole(role: String, username: String): UserDetailsDTO {
         val user = userRepository.findByUsername(username)
             ?: throw UsernameNotFoundException("Specified username doesn't exist")
-        user.removeRole(Rolename.valueOf(role.uppercase(Locale.getDefault())))
+        user.removeRole(Rolename.valueOf(role.toUpperCase(Locale.getDefault())))
 
 
         userRepository.save(user)
